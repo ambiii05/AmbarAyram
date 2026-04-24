@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Buscando el Trofeo Oculto</title>
+    <style>
+        /* Reseteamos los márgenes y ocultamos barras de desplazamiento */
+        body {
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            background-color: #222; /* Un fondo gris oscuro para que el trofeo contraste al ser iluminado */
+            font-family: 'Courier New', Courier, monospace;
+        }
+
+        /* Esta es la capa que hace el efecto de oscuridad y linterna */
+        #oscuridad {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            /* La magia de la linterna: un degradado que es transparente en el centro y negro en los bordes */
+            background: radial-gradient(circle 120px at 50% 50%, transparent 10%, black 100px);
+            /* pointer-events en 'none' es VITAL para que los clics atraviesen la oscuridad y den en el trofeo */
+            pointer-events: none; 
+            z-index: 10;
+        }
+
+        /* Estilos de la imagen que hay que encontrar */
+        #trofeo {
+            position: absolute;
+            width: 60px; /* Ajusta el tamaño de tu trofeo aquí */
+            height: auto;
+            cursor: pointer;
+            z-index: 5;
+            transition: transform 0.2s;
+        }
+
+        /* Un pequeño efecto al pasar el ratón justo encima del trofeo */
+        #trofeo:hover {
+            transform: scale(1.1);
+        }
+
+        /* Pantalla de victoria (oculta por defecto) */
+        #pantalla-victoria {
+            display: none; /* Se mantiene oculta hasta el clic */
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background-color: white; /* Ilumina toda la pantalla */
+            z-index: 20;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+        }
+
+        #pantalla-victoria h1 {
+            color: #00ff00; /* Verde hacker */
+            background-color: #000;
+            padding: 20px 40px;
+            border-radius: 10px;
+            font-size: 3rem;
+            box-shadow: 0 0 20px #00ff00;
+        }
+
+        #tesoro {
+            max-width: 400px;
+            margin-top: 30px;
+        }
+    </style>
+</head>
+<body>
+
+    <div id="oscuridad"></div>
+
+    <img id="trofeo" src="trofeo.png" alt="Trofeo Oculto">
+
+    <div id="pantalla-victoria">
+        <h1>¡NIVEL HACKER SUPERADO!</h1>
+        <img id="tesoro" src="tesoro.gif" alt="Tesoro Encontrado">
+    </div>
+
+    <script>
+        const oscuridad = document.getElementById('oscuridad');
+        const trofeo = document.getElementById('trofeo');
+        const pantallaVictoria = document.getElementById('pantalla-victoria');
+
+        // Función para colocar el trofeo en un lugar aleatorio
+        function esconderTrofeo() {
+            // Restamos unos píxeles para que la imagen no se genere fuera de la pantalla
+            const maxAncho = window.innerWidth - 80; 
+            const maxAlto = window.innerHeight - 80;
+
+            const xAleatorio = Math.floor(Math.random() * maxAncho);
+            const yAleatorio = Math.floor(Math.random() * maxAlto);
+
+            trofeo.style.left = `${xAleatorio}px`;
+            trofeo.style.top = `${yAleatorio}px`;
+        }
+
+        // Ejecutamos la función al cargar la página
+        esconderTrofeo();
+
+        // Lógica de la linterna: actualizar la posición del círculo transparente con el ratón
+        document.addEventListener('mousemove', (evento) => {
+            const x = evento.clientX;
+            const y = evento.clientY;
+            // Actualizamos el degradado para que el círculo siga al cursor
+            oscuridad.style.background = `radial-gradient(circle 120px at ${x}px ${y}px, transparent 10%, black 120px)`;
+        });
+
+        // Evento al dar clic en el trofeo
+        trofeo.addEventListener('click', () => {
+            // Quitamos la oscuridad y el trofeo
+            oscuridad.style.display = 'none';
+            trofeo.style.display = 'none';
+            
+            // Mostramos la pantalla de victoria (esto ilumina la pantalla a blanco)
+            pantallaVictoria.style.display = 'flex';
+        });
+
+        // Opcional: reposicionar el trofeo si el usuario cambia el tamaño de la ventana
+        window.addEventListener('resize', esconderTrofeo);
+    </script>
+</body>
+</html>
